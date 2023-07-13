@@ -3,9 +3,10 @@
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
+const API_BASE_URL = "http://api.tvmaze.com"
 const MOVIE_URL = "http://api.tvmaze.com/search/shows";
 const MISSING_IMAGE = "https://tinyurl.com/tv-missing";
-
+const EPISODE_URL= "http://api.tvmaze.com/shows/%5Bshowid%5D/episodes"
 
 /** Given a search term, search for tv shows that match that query.
  *
@@ -93,10 +94,36 @@ $searchForm.on("submit", async function handleSearchForm(evt) {
  *      { id, name, season, number }
  */
 
-// async function getEpisodesOfShow(id) { }
+async function getEpisodesOfShow(id) {
+  // const config = { params: { q: id } }
+  const response = await axios.get(`${API_BASE_URL}/shows/${id}/episodes`)
+  console.log('reponse:' ,response)
+  let episodes = response.data.map((episodes)=>{
+    console.log(episodes)
+    return {
+      id: episodes.id.id,
+      name: episodes.id.name,
+      season: episodes.id.season,
+      number: episodes.id.number,
+    }
+  })
+  return episodes
+}
 
 /** Write a clear docstring for this function... */
 
-// function displayEpisodes(episodes) { }
+function displayEpisodes(episodes) {
+  console.log(episodes)
+  const $episodesList = $('#episodesList')
+  console.log('episodelist:',$episodesList)
+  $episodesList.empty()
+
+  episodes.forEach((episode)=>{
+    $episodesList.append(
+      $('<li>').text(`${episode.name} (season ${episode.season}), number ${episode.number}`)
+    )
+  })
+  $('#episodeArea').show()
+ }
 
 // add other functions that will be useful / match our structure & design
